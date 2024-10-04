@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app new</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="three.js"></script>
+        <script>
+            // import * as THREE from 'three';
+
+
+            const width = window.innerWidth, height = window.innerHeight;
+
+            // init
+
+            const camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 10 );
+            camera.position.z = 3;
+
+            const scene = new THREE.Scene();
+
+            const loader = new THREE.TextureLoader();
+            
+
+            const image = new Image()
+            const texture = new THREE.Texture(image)
+
+            image.addEventListener('load', () => {
+                console.log('image loaded')
+                texture.needsUpdate = true
+            })
+
+            image.src = 'static/texture.png'
+
+            const geometry = new THREE.BoxGeometry( 1, 0.2, 0.2 );
+            const material = new THREE.MeshNormalMaterial();
+
+            const geometry2 = new THREE.SphereGeometry( 0.3, 32, 32 );
+            const material2 = new THREE.MeshBasicMaterial({map: texture,});
+            
+
+            const mesh = new THREE.Mesh( geometry, material );
+            // scene.add( mesh );
+
+            const mesh2 = new THREE.Mesh( geometry2, material2 );
+            scene.add( mesh2 );
+
+            
+            const renderer = new THREE.WebGLRenderer( { antialias: true } );
+            renderer.setSize( width, height );
+            renderer.setAnimationLoop( animate );
+            document.body.appendChild( renderer.domElement );
+
+            // animation
+
+            function animate( time ) {
+
+                mesh2.rotation.y = time / 1000;
+                // mesh2.rotation.x = time / 2000;
+
+                renderer.render( scene, camera );
+
+            }
+
+            // animate();
+
+            renderer.render( scene, camera );
+		</script>
+	</body>
+</html>
