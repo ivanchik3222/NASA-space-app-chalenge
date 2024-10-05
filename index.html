@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app new</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script src="js/three.js"></script>
-        <script src="main.js">
-		</script>
-	</body>
+  <head>
+    <meta charset="utf-8">
+    <title>Orbital Simulation with Time Control</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div id="after_can">
+      <!-- Ползунок для управления временем -->
+      <form onsubmit="return false">
+        <label for="timeRange">Speed: </label>
+        <input id="timeRange" type="range" min="-1" max="1" value="0.1" step="0.1" oninput="updateSpeed(this.value)">
+        <output id="speedValue">0.1</output>
+      </form>
+    </div>
+
+    <script src="main.js">
+    </script>
+  </body>
 </html>
