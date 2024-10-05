@@ -25,6 +25,7 @@ const geometry = new THREE.SphereGeometry(6.3, 32, 32);
 const material = new THREE.MeshBasicMaterial({ map: texture_earth });
 const centralSphere = new THREE.Mesh(geometry, material);
 scene.add(centralSphere);
+centralSphere.rotation.x = 0.5;
 
 // Добавляем орбитальный путь
 const points = [];
@@ -114,6 +115,8 @@ function animate() {
   } else {
     clock = 0;  // Сброс времени
   }
+  
+  centralSphere.rotation.y += speed*(1/25);
   
 
   renderer.render(scene, camera);
