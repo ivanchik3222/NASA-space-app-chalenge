@@ -26,14 +26,12 @@ function set_tex_scene(texture_space){
 
 set_tex_scene(texture_space);
 
-document.addEventListener('wheel', onDocumentMouseWheel, false);
-
 // Центральный объект
 const geometry = new THREE.SphereGeometry(6.3, 32, 32);
 const material = new THREE.MeshBasicMaterial({ map: texture_earth });
 const centralSphere = new THREE.Mesh(geometry, material);
 scene.add(centralSphere);
-centralSphere.rotation.x = 0.5;
+centralSphere.rotation.x = 0.01;
 
 // Добавляем орбитальный путь
 const points = [];
@@ -95,23 +93,78 @@ function keplerSolve(e, M) {
   return E0;
 }
 
-function onDocumentMouseWheel(event) {
-  camera.position.z += event.deltaY * zoomSpeed;
-//   set_tex_scene(texture_space.repeat.set(zoomSpeed*5, zoomSpeed*5));
-
-  if (camera.position.z < minZoom) {
-    camera.position.z = minZoom;
-  }
-  if (camera.position.z > maxZoom) {
-    camera.position.z = maxZoom;
-  }
-}
-
 function updateSpeed(value) {
   speed = parseFloat(value); // Обновляем скорость
   document.getElementById('speedValue').textContent = value; // Обновляем отображение скорости
 }
 
+let isDragging = false;
+let previousMousePosition = {
+  x: 0,
+  y: 0
+};
+let cameraRotation = {
+  theta: 0, // Азимутальный угол (вращение вокруг оси Y)
+  phi: Math.PI / 2 // Полярный угол (вращение вверх-вниз)
+};
+let radius = 90; // Радиус орбиты камеры
+
+// Обработчики событий мыши
+document.addEventListener('mousedown', function (e) {
+  isDragging = true;
+});
+
+document.addEventListener('mousemove', function (e) {
+  if (isDragging) {
+    let deltaMove = {
+      x: e.clientX - previousMousePosition.x,
+      y: e.clientY - previousMousePosition.y
+    };
+
+    cameraRotation.theta += deltaMove.x * 0.01; // Инвертируем ось X (изменили знак)
+    cameraRotation.phi -= deltaMove.y * 0.01; // Вращение по вертикали (угол вокруг оси X)
+
+    // Ограничиваем угол phi, чтобы избежать переворота камеры (не позволяем phi быть <0 или >Pi)
+    cameraRotation.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraRotation.phi));
+
+    updateCameraPosition(); // Обновляем положение камеры
+  }
+
+  previousMousePosition = {
+    x: e.clientX,
+    y: e.clientY
+  };
+});
+
+document.addEventListener('mouseup', function (e) {
+  isDragging = false;
+});
+
+// Обработчик события прокрутки мыши для увеличения/уменьшения (зум)
+document.addEventListener('wheel', function(event) {
+  radius += event.deltaY * zoomSpeed;
+
+  // Ограничиваем радиус (зум)
+  radius = Math.max(minZoom, Math.min(maxZoom, radius));
+
+  updateCameraPosition(); // Обновляем положение камеры после изменения зума
+});
+
+// Обновляем положение камеры в зависимости от текущих углов
+function updateCameraPosition() {
+  // Полярные координаты -> Декартовы координаты
+  camera.position.x = radius * Math.sin(cameraRotation.phi) * Math.cos(cameraRotation.theta);
+  camera.position.y = radius * Math.cos(cameraRotation.phi);
+  camera.position.z = radius * Math.sin(cameraRotation.phi) * Math.sin(cameraRotation.theta);
+
+  // Камера всегда смотрит на центр сцены (0,0,0)
+  camera.lookAt(0, 0, 0);
+}
+
+// Первоначальная установка позиции камеры
+updateCameraPosition();
+
+// Сохраняем основную анимацию
 function animate() {
   requestAnimationFrame(animate);
 
@@ -120,15 +173,15 @@ function animate() {
     orbitingSphere.position.set(loc.x, loc.y, loc.z);
     clock += speed;  // Используем скорость, задаваемую ползунком
     
-    
   } else {
     clock = 0;  // Сброс времени
   }
-  
-  centralSphere.rotation.y += speed*(1/25);
-  
 
+  centralSphere.rotation.y += speed * (1 / 25);
+  
   renderer.render(scene, camera);
+
+  
 }
 
 animate();
