@@ -3,7 +3,7 @@ const a = 38;   // Большая полуось
 const ts = 121; // Количество временных шагов
 const zoomSpeed = 0.1;
 const minZoom = 15; // Минимальное расстояние
-const maxZoom = 1500; // Максимальное расстояние
+const maxZoom = 150; // Максимальное расстояние
 let speed = 0.1; // Изначальная скорость
 let clock = 0;
 
@@ -15,8 +15,16 @@ renderer.setSize(window.innerWidth, window.innerHeight-100);
 document.body.appendChild(renderer.domElement);
 
 const loader = new THREE.TextureLoader();
+
 const texture_earth = loader.load('static/texture.png');
 const texture_moon = loader.load('static/moon.jpg');
+const texture_space = loader.load('static/spacec.jpg' );
+
+function set_tex_scene(texture_space){
+    scene.background = texture_space;  
+}
+
+set_tex_scene(texture_space);
 
 document.addEventListener('wheel', onDocumentMouseWheel, false);
 
@@ -89,6 +97,7 @@ function keplerSolve(e, M) {
 
 function onDocumentMouseWheel(event) {
   camera.position.z += event.deltaY * zoomSpeed;
+//   set_tex_scene(texture_space.repeat.set(zoomSpeed*5, zoomSpeed*5));
 
   if (camera.position.z < minZoom) {
     camera.position.z = minZoom;
