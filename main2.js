@@ -1,11 +1,15 @@
-const e = 0.0549; // Эксцентриситет
-const a = 38;   // Большая полуось
-const ts = 121; // Количество временных шагов
-const zoomSpeed = 0.1;
-const minZoom = 15; // Минимальное расстояние
-const maxZoom = 1500; // Максимальное расстояние
-let speed = 0.1; // Изначальная скорость
-let clock = 0;
+const objject = 'P/2004 R1 (McNaught)';
+const epoch_tdb = '54629';
+const tp_tdb = '2455248.548';
+const e = '0.682526943';
+const i_deg = '4.894555854';
+const w_deg = '0.626837835';
+const node_deg = '295.9854497';
+const q_au_1 = '0.986192006';
+const q_au_2 = '5.23';
+const p_yr = '5.48';
+const moid_au = '0.027011';
+const ref = '20';
 
 // Сцена, камера и рендерер
 const scene = new THREE.Scene();
@@ -49,9 +53,9 @@ camera.position.z = 90;
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / (window.innerHeight-100);
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, (window.innerHeight-100));
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function propagate(clock, e, a) {
@@ -109,12 +113,9 @@ function animate() {
     const loc = propagate(clock, e, a);
     orbitingSphere.position.set(loc.x, loc.y, loc.z);
     clock += speed;  // Используем скорость, задаваемую ползунком
-    
-    
   } else {
     clock = 0;  // Сброс времени
   }
-  
 
   renderer.render(scene, camera);
 }
